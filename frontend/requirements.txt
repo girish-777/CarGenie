@@ -1,0 +1,3 @@
+# No dependencies needed for simple HTTP server (uses Python standard library)
+# This file is here for Render compatibility
+
