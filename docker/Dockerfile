@@ -23,12 +23,12 @@ EXPOSE 8080
 # Install Python for simple HTTP server
 RUN apk add --no-cache python3
 
-# Create a simple HTTP server to satisfy Render's port requirement
-RUN printf 'from http.server import SimpleHTTPRequestHandler, HTTPServer\nimport os\nos.chdir("/data")\nserver = HTTPServer(("0.0.0.0", 8080), SimpleHTTPRequestHandler)\nserver.serve_forever()\n' > /data/server.py && chmod +x /data/server.py
+# Create entrypoint script that ensures server.py exists
+RUN printf '#!/bin/sh\nif [ ! -f /data/server.py ]; then\n  printf "from http.server import SimpleHTTPRequestHandler, HTTPServer\\nimport os\\nos.chdir(\\\"/data\\\")\\nserver = HTTPServer((\\\"0.0.0.0\\\", 8080), SimpleHTTPRequestHandler)\\nserver.serve_forever()\\n" > /data/server.py\nfi\nexec python3 /data/server.py\n' > /entrypoint.sh && chmod +x /entrypoint.sh
 
-# Create a volume for persistent storage (after server.py is created)
+# Create a volume for persistent storage
 VOLUME ["/data"]
 
 # Keep container running with HTTP server
-CMD ["python3", "/data/server.py"]
+CMD ["/entrypoint.sh"]
 
