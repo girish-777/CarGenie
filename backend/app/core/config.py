@@ -46,6 +46,7 @@ class Settings(BaseSettings):
         # Look for .env file in project root (one level up from backend/)
         env_file = _env_file_path
         case_sensitive = True
+        extra = 'ignore'  # Ignore extra environment variables not defined in the model
 
 
 settings = Settings()

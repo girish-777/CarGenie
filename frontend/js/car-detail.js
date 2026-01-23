@@ -3,11 +3,12 @@
  */
 
 var API_BASE_URL = window.BACKEND_URL;
-if (typeof window.API_BASE_URL !== 'undefined') {
-    API_BASE_URL = window.API_BASE_URL;
-} else {
-    window.API_BASE_URL = API_BASE_URL;
+if (!API_BASE_URL) {
+    console.error('BACKEND_URL is not set! Please set window.BACKEND_URL before loading scripts.');
+    API_BASE_URL = 'http://localhost:8000'; // Fallback for local development
+    console.warn('Using fallback BACKEND_URL:', API_BASE_URL);
 }
+window.API_BASE_URL = API_BASE_URL;
 
 // Load favorites.js if not already loaded
 if (typeof createFavoriteButton === 'undefined') {
@@ -61,8 +62,13 @@ async function loadCarDetail(carId) {
     carDetailContainer.style.display = 'none';
     
     try {
+        if (!API_BASE_URL) {
+            throw new Error('API_BASE_URL is not set. Please set window.BACKEND_URL.');
+        }
         const url = `${API_BASE_URL}/api/v1/cars/${carId}`;
         console.log('[DEBUG] loadCarDetail: Fetching from', url);
+        console.log('[DEBUG] loadCarDetail: API_BASE_URL =', API_BASE_URL);
+        console.log('[DEBUG] loadCarDetail: carId =', carId);
         
         const response = await fetch(url);
         console.log('[DEBUG] loadCarDetail: Response status', response.status, response.statusText);
