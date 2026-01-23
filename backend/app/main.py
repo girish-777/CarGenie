@@ -24,14 +24,20 @@ cors_origins = settings.CORS_ORIGINS
 if isinstance(cors_origins, str):
     cors_origins = [origin.strip() for origin in cors_origins.split(",") if origin.strip()]
 
+# Add explicit frontend URL if not already present
+frontend_url = "https://cargenie-frontend.onrender.com"
+if frontend_url not in cors_origins:
+    cors_origins.append(frontend_url)
+
 logger.info(f"CORS Origins configured: {cors_origins}")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
     expose_headers=["*"],
+    max_age=3600,
 )
 
 # Include routers
@@ -58,6 +64,29 @@ def root():
 def health_check():
     """Health check endpoint"""
     return {"status": "healthy"}
+
+@app.get("/api/v1/health")
+def api_health_check():
+    """Detailed health check with database connection test"""
+    from sqlalchemy import text
+    from app.db.database import SessionLocal
+    
+    db_status = "unknown"
+    try:
+        db = SessionLocal()
+        # Test database connection
+        db.execute(text("SELECT 1"))
+        db.close()
+        db_status = "connected"
+    except Exception as e:
+        db_status = f"error: {str(e)}"
+        logger.error(f"Database health check failed: {e}")
+    
+    return {
+        "status": "healthy",
+        "database": db_status,
+        "api": "operational"
+    }
 
 
 # Alert feature removed
