@@ -25,4 +25,7 @@ jobs:
           file: ./docker/Dockerfile
           push: true
           tags: gi7ri7sh7/cargenie_db:latest
+      
+      - name: Image info
+        run: echo "✅ New image will have port 8080"
 
