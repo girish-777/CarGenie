@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     
     # CORS - can be a string (comma-separated) or list
     # Default includes localhost and common Render frontend URLs
-    CORS_ORIGINS: Union[str, list[str]] = "http://localhost:8000,http://127.0.0.1:8000,http://localhost:3000,https://cargenie-frontend.onrender.com"
+    CORS_ORIGINS: Union[str, list[str]] = "http://localhost:8000,http://127.0.0.1:8000,http://localhost:3000,https://cargenie-frontend.onrender.com,https://cargenie-frontend.onrender.com/"
     
     @field_validator('CORS_ORIGINS', mode='before')
     @classmethod
