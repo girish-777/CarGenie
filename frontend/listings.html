@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Cars - CarGenie</title>
+    <link rel="icon" type="image/x-icon" href="images/logo%202%20%281%29.ico">
+    <link rel="apple-touch-icon" href="images/logo%202%20%281%29.ico">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="index.html" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none;">
+                    <img src="images/logo%202%20%281%29.ico" alt="CarGenie Logo" class="logo-img">
+                    <h1 style="margin: 0;">CarGenie</h1>
+                </a>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html">Home</a>
+                <a href="listings.html" class="active">Browse Cars</a>
+                <a href="favorites.html" id="favoritesLink" style="display: none;">My Favorites</a>
+                <a href="compare.html" id="compareLink" style="display: none;">Compare</a>
+                <a href="my-car-value.html">My Car Value</a>
+                <a href="login.html" id="loginLink">Login</a>
+                <a href="signup.html" id="signupLink">Sign Up</a>
+                <a href="#" id="logoutLink" style="display: none;">Logout</a>
+                <a href="profile.html" id="profileLink" style="display: none;">👤</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="listings-section">
+            <div class="listings-wrapper">
+                <!-- Sidebar with Search and Filters -->
+                <aside class="sidebar-filters">
+                    <h2>Search & Filters</h2>
+                    
+                    <div class="search-bar">
+                        <input type="text" id="searchInput" placeholder="Search by make, model, or description...">
+                        <button type="button" id="searchButton" class="btn btn-primary" onclick="handleSearch(); return false;">Search</button>
+                    </div>
+                    
+                    <div class="filters-list">
+                        <div class="filter-group">
+                            <label for="makeFilter">Make</label>
+                            <select id="makeFilter">
+                                <option value="">All Makes</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="fuelTypeFilter">Fuel Type</label>
+                            <select id="fuelTypeFilter">
+                                <option value="">All Types</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="transmissionFilter">Transmission</label>
+                            <select id="transmissionFilter">
+                                <option value="">All</option>
+                                <option value="automatic">Automatic</option>
+                                <option value="manual">Manual</option>
+                                <option value="CVT">CVT</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="conditionFilter">Condition</label>
+                            <select id="conditionFilter">
+                                <option value="">All</option>
+                                <option value="new">New</option>
+                                <option value="used">Used</option>
+                                <option value="certified-pre-owned">Certified Pre-Owned</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="minPriceFilter">Min Price</label>
+                            <input type="number" id="minPriceFilter" placeholder="Min">
+                        </div>
+                        <div class="filter-group">
+                            <label for="maxPriceFilter">Max Price</label>
+                            <input type="number" id="maxPriceFilter" placeholder="Max">
+                        </div>
+                        <div class="filter-group">
+                            <label for="minYearFilter">Min Year</label>
+                            <input type="number" id="minYearFilter" placeholder="Year">
+                        </div>
+                        <div class="filter-group">
+                            <label for="maxYearFilter">Max Year</label>
+                            <input type="number" id="maxYearFilter" placeholder="Year">
+                        </div>
+                        <div class="filter-group">
+                            <label for="sortByFilter">Sort By</label>
+                            <select id="sortByFilter">
+                                <option value="created_at">Newest First</option>
+                                <option value="price">Price</option>
+                                <option value="year">Year</option>
+                                <option value="mileage">Mileage</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="sortOrderFilter">Order</label>
+                            <select id="sortOrderFilter">
+                                <option value="desc">Descending</option>
+                                <option value="asc">Ascending</option>
+                            </select>
+                        </div>
+                        <div class="filter-group filter-buttons">
+                            <button id="applyFiltersBtn" class="btn btn-primary" onclick="applyFilters(); return false;">Apply Filters</button>
+                            <button id="clearFiltersBtn" class="btn btn-secondary" onclick="clearFilters(); return false;">Clear</button>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Main Content Area -->
+                <div class="listings-content">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h1 style="margin: 0;">Browse Our Car Collection</h1>
+                    </div>
+
+                <!-- Loading indicator -->
+                <div id="loadingIndicator" class="loading" style="display: none;">
+                    <p>Loading cars...</p>
+                </div>
+
+                <!-- Error message -->
+                <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+                <!-- Cars Grid -->
+                <div id="carsGrid" class="cars-grid">
+                    <!-- Cars will be loaded here -->
+                </div>
+
+                <!-- Pagination -->
+                <div id="pagination" class="pagination" style="display: none;">
+                    <!-- Pagination controls will be added here -->
+                </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+        </div>
+    </footer>
+
+    <script>
+        // Load makes and fuel types immediately as fallback
+        (function() {
+            // Add makes (only Toyota, BMW, Kia, Ford, Mercedes-Benz)
+            const makeSelect = document.getElementById('makeFilter');
+            if (makeSelect && makeSelect.children.length <= 1) {
+                const makes = ['Toyota', 'BMW', 'Kia', 'Ford', 'Mercedes-Benz'];
+                makes.forEach(function(make) {
+                    const option = document.createElement('option');
+                    option.value = make;
+                    option.textContent = make;
+                    makeSelect.appendChild(option);
+                });
+                console.log('Added makes to dropdown: Toyota, BMW, Kia, Ford, Mercedes-Benz');
+            }
+            
+            // Add fuel types (only gasoline and electric)
+            const fuelSelect = document.getElementById('fuelTypeFilter');
+            if (fuelSelect && fuelSelect.children.length <= 1) {
+                const fuelTypes = ['gasoline', 'electric'];
+                fuelTypes.forEach(function(type) {
+                    const option = document.createElement('option');
+                    option.value = type;
+                    option.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+                    fuelSelect.appendChild(option);
+                });
+                console.log('Added fuel types to dropdown: Gasoline, Electric');
+            }
+        })();
+        
+        // Apply filters function - works independently
+        window.applyFilters = function() {
+            console.log('applyFilters called');
+            
+            // Get filter values - only include if they have a value
+            const makeValue = document.getElementById('makeFilter')?.value;
+            const fuelValue = document.getElementById('fuelTypeFilter')?.value;
+            const transValue = document.getElementById('transmissionFilter')?.value;
+            const condValue = document.getElementById('conditionFilter')?.value;
+            const minPrice = document.getElementById('minPriceFilter')?.value;
+            const maxPrice = document.getElementById('maxPriceFilter')?.value;
+            const minYear = document.getElementById('minYearFilter')?.value;
+            const maxYear = document.getElementById('maxYearFilter')?.value;
+            const sortBy = document.getElementById('sortByFilter')?.value || 'created_at';
+            const sortOrder = document.getElementById('sortOrderFilter')?.value || 'desc';
+            const searchValue = document.getElementById('searchInput')?.value.trim();
+            
+            // Build API URL with only non-empty filters
+            const params = new URLSearchParams({ page: '1', page_size: '12' });
+            
+            if (makeValue && makeValue !== '') {
+                params.append('make', makeValue);
+                console.log('Adding make filter:', makeValue);
+            }
+            if (fuelValue && fuelValue !== '') {
+                params.append('fuel_type', fuelValue);
+            }
+            if (transValue && transValue !== '') {
+                params.append('transmission', transValue);
+            }
+            if (condValue && condValue !== '') {
+                params.append('condition', condValue);
+            }
+            if (minPrice && minPrice !== '') {
+                params.append('min_price', minPrice);
+            }
+            if (maxPrice && maxPrice !== '') {
+                params.append('max_price', maxPrice);
+            }
+            if (minYear && minYear !== '') {
+                params.append('min_year', minYear);
+            }
+            if (maxYear && maxYear !== '') {
+                params.append('max_year', maxYear);
+            }
+            if (searchValue && searchValue !== '') {
+                params.append('search', searchValue);
+            }
+            
+            params.append('sort_by', sortBy);
+            params.append('sort_order', sortOrder);
+            
+            const url = 'http://localhost:8000/api/v1/cars/?' + params.toString();
+            console.log('Fetching filtered cars from:', url);
+            console.log('Filters applied:', {
+                make: makeValue,
+                fuel_type: fuelValue,
+                transmission: transValue,
+                condition: condValue
+            });
+            
+            // Show loading
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const errorMessage = document.getElementById('errorMessage');
+            const carsGrid = document.getElementById('carsGrid');
+            
+            if (loadingIndicator) loadingIndicator.style.display = 'block';
+            if (errorMessage) errorMessage.style.display = 'none';
+            if (carsGrid) carsGrid.innerHTML = '';
+            
+            // Call API
+            fetch(url)
+                .then(function(response) {
+                    if (!response.ok) throw new Error('Failed to load cars');
+                    return response.json();
+                })
+                .then(function(data) {
+                    console.log('Received', data.cars.length, 'cars out of', data.total, 'total');
+                    console.log('Cars received:', data.cars.map(function(c) { return c.make + ' ' + c.model; }));
+                    if (loadingIndicator) loadingIndicator.style.display = 'none';
+                    
+                    if (data.cars.length === 0) {
+                        if (carsGrid) {
+                            carsGrid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; color: #6b7280; padding: 2rem;">No cars found matching your filters.</p>';
+                        }
+                    } else {
+                        // Use loadCars if available, otherwise render directly
+                        if (typeof window.loadCars === 'function') {
+                            window.currentFilters = filters;
+                            window.currentPage = 1;
+                            window.loadCars(1);
+                        } else {
+                            // Simple rendering
+                            if (carsGrid) {
+                                carsGrid.innerHTML = '';
+                                data.cars.forEach(function(car) {
+                                    const card = document.createElement('div');
+                                    card.className = 'car-card';
+                                    card.style.cursor = 'pointer';
+                                    card.onclick = function() {
+                                        window.location.href = 'car-detail.html?id=' + car.id;
+                                    };
+                                    const imageUrl = car.image_urls && car.image_urls.length > 0 
+                                        ? car.image_urls[0] 
+                                        : 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800';
+                                    const engineCondition = car.engine_condition ? ' • Engine: ' + car.engine_condition.charAt(0).toUpperCase() + car.engine_condition.slice(1) : '';
+                                    card.innerHTML = '<div class="car-image"><img src="' + imageUrl + '" alt="' + car.make + ' ' + car.model + '"></div><div class="car-info"><h3>' + car.year + ' ' + car.make + ' ' + car.model + '</h3><p class="car-price">$' + car.price.toLocaleString() + '</p><div class="car-details"><span>📍 ' + (car.location || 'N/A') + '</span><span>⛽ ' + car.fuel_type + '</span><span>🔧 ' + car.transmission + '</span><span>📊 ' + car.mileage.toLocaleString() + ' mi</span></div><p class="car-condition">' + car.condition + engineCondition + '</p></div>';
+                                    carsGrid.appendChild(card);
+                                });
+                            }
+                        }
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Error:', error);
+                    if (loadingIndicator) loadingIndicator.style.display = 'none';
+                    if (errorMessage) {
+                        errorMessage.textContent = 'Failed to load cars. Make sure the backend is running.';
+                        errorMessage.style.display = 'block';
+                    }
+                });
+        };
+        
+        // Clear filters function
+        window.clearFilters = function() {
+            console.log('clearFilters called');
+            document.getElementById('searchInput').value = '';
+            document.getElementById('makeFilter').value = '';
+            document.getElementById('fuelTypeFilter').value = '';
+            document.getElementById('transmissionFilter').value = '';
+            document.getElementById('conditionFilter').value = '';
+            document.getElementById('minPriceFilter').value = '';
+            document.getElementById('maxPriceFilter').value = '';
+            document.getElementById('minYearFilter').value = '';
+            document.getElementById('maxYearFilter').value = '';
+            document.getElementById('sortByFilter').value = 'created_at';
+            document.getElementById('sortOrderFilter').value = 'desc';
+            
+            // Reload all cars
+            if (typeof window.handleSearch === 'function') {
+                window.handleSearch();
+            } else {
+                window.location.reload();
+            }
+        };
+        
+        // Simple direct search function - works independently
+        window.handleSearch = function() {
+            const searchInput = document.getElementById('searchInput');
+            if (!searchInput) {
+                console.error('Search input not found');
+                return;
+            }
+            const searchTerm = searchInput.value.trim();
+            console.log('handleSearch called with:', searchTerm);
+            
+            // Show loading
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const errorMessage = document.getElementById('errorMessage');
+            const carsGrid = document.getElementById('carsGrid');
+            
+            if (loadingIndicator) loadingIndicator.style.display = 'block';
+            if (errorMessage) errorMessage.style.display = 'none';
+            if (carsGrid) carsGrid.innerHTML = '';
+            
+            // Build API URL
+            const params = new URLSearchParams({
+                page: '1',
+                page_size: '12'
+            });
+            if (searchTerm) {
+                params.append('search', searchTerm);
+            }
+            const url = 'http://localhost:8000/api/v1/cars/?' + params.toString();
+            
+            console.log('Fetching from:', url);
+            
+            // Call API directly
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to load cars');
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Received', data.cars.length, 'cars');
+                    if (loadingIndicator) loadingIndicator.style.display = 'none';
+                    
+                    if (data.cars.length === 0) {
+                        if (carsGrid) {
+                            carsGrid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; color: #6b7280; padding: 2rem;">No cars found matching "' + searchTerm + '".</p>';
+                        }
+                    } else {
+                        // Use the loadCars function if available, otherwise render directly
+                        if (typeof window.loadCars === 'function') {
+                            window.currentFilters = window.currentFilters || {};
+                            window.currentFilters.search = searchTerm || null;
+                            window.currentPage = 1;
+                            window.loadCars(1);
+                        } else {
+                            // Fallback: simple rendering
+                            if (carsGrid) {
+                                carsGrid.innerHTML = '';
+                                data.cars.forEach(function(car) {
+                                    const card = document.createElement('div');
+                                    card.className = 'car-card';
+                                    card.style.cursor = 'pointer';
+                                    card.onclick = function() {
+                                        window.location.href = 'car-detail.html?id=' + car.id;
+                                    };
+                                    const imageUrl = car.image_urls && car.image_urls.length > 0 
+                                        ? car.image_urls[0] 
+                                        : 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800';
+                                    const engineCondition = car.engine_condition ? ' • Engine: ' + car.engine_condition.charAt(0).toUpperCase() + car.engine_condition.slice(1) : '';
+                                    card.innerHTML = '<div class="car-image"><img src="' + imageUrl + '" alt="' + car.make + ' ' + car.model + '"></div><div class="car-info"><h3>' + car.year + ' ' + car.make + ' ' + car.model + '</h3><p class="car-price">$' + car.price.toLocaleString() + '</p><div class="car-details"><span>📍 ' + (car.location || 'N/A') + '</span><span>⛽ ' + car.fuel_type + '</span><span>🔧 ' + car.transmission + '</span><span>📊 ' + car.mileage.toLocaleString() + ' mi</span></div><p class="car-condition">' + car.condition + engineCondition + '</p></div>';
+                                    carsGrid.appendChild(card);
+                                });
+                            }
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    if (loadingIndicator) loadingIndicator.style.display = 'none';
+                    if (errorMessage) {
+                        errorMessage.textContent = 'Failed to load cars. Make sure the backend is running.';
+                        errorMessage.style.display = 'block';
+                    }
+                });
+        };
+        
+    </script>
+    <script src="js/notifications.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/favorites.js"></script>
+    <script src="js/compare.js"></script>
+    <script src="js/reviews.js"></script>
+    <script src="js/listings.js"></script>
+    <script src="js/chatbot.js"></script>
+</body>
+</html>

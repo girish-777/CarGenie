@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Favorites - CarGenie</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>CarGenie</h1>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="listings.html">Browse Cars</a>
+                <a href="favorites.html" id="favoritesLink" style="display: none;">My Favorites</a>
+                <a href="compare.html" id="compareLink" style="display: none;">Compare</a>
+                <a href="my-car-value.html">My Car Value</a>
+                <a href="login.html" id="loginLink">Login</a>
+                <a href="signup.html" id="signupLink">Sign Up</a>
+                <a href="#" id="logoutLink" style="display: none;" onclick="logout(); return false;">Logout</a>
+                <a href="profile.html" id="profileLink" style="display: none;">👤</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container" style="padding: 2rem 0;">
+        <h1 style="margin-bottom: 2rem;">My Favorite Cars</h1>
+        
+        <div id="favoritesContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
+            <p>Loading your favorites...</p>
+        </div>
+        
+        <div id="emptyFavorites" style="display: none; text-align: center; padding: 4rem 2rem;">
+            <h2 style="color: #6b7280; margin-bottom: 1rem;">No favorites yet</h2>
+            <p style="color: #9ca3af; margin-bottom: 2rem;">Start adding cars to your favorites list!</p>
+            <a href="listings.html" class="btn btn-primary">Browse Cars</a>
+        </div>
+        
+        <!-- Recommended Cars Section -->
+        <div id="recommendationsSection" style="margin-top: 4rem; display: none;">
+            <h2 style="margin-bottom: 1.5rem; color: #1f2937;">✨ Personalized Recommendations</h2>
+            <div id="recommendationsContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
+                <p>Loading recommendations...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>CarGenie - Your AI-Powered Car Marketplace</p>
+        </div>
+    </footer>
+
+    <script src="js/notifications.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/favorites.js"></script>
+    <script src="js/favorites-page.js"></script>
+    <script src="js/chatbot.js"></script>
+</body>
+</html>
+

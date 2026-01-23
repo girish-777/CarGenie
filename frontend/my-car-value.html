@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estimate My Car Value - CarGenie</title>
+    <link rel="icon" type="image/x-icon" href="images/logo%202%20%281%29.ico">
+    <link rel="apple-touch-icon" href="images/logo%202%20%281%29.ico">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="index.html" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none;">
+                    <img src="images/logo%202%20%281%29.ico" alt="CarGenie Logo" class="logo-img">
+                    <h1 style="margin: 0;">CarGenie</h1>
+                </a>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html">Home</a>
+                <a href="listings.html">Browse Cars</a>
+                <a href="favorites.html" id="favoritesLink" style="display: none;">My Favorites</a>
+                <a href="compare.html" id="compareLink" style="display: none;">Compare</a>
+                <a href="my-car-value.html" class="active">My Car Value</a>
+                <a href="login.html" id="loginLink">Login</a>
+                <a href="signup.html" id="signupLink">Sign Up</a>
+                <a href="#" id="logoutLink" style="display: none;">Logout</a>
+                <a href="profile.html" id="profileLink" style="display: none;">👤</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="listings-section">
+            <div class="container">
+                <h1>Estimate My Car Value</h1>
+                <p style="color: #6b7280; margin-bottom: 2rem;">
+                    Get an instant estimate of your car's current market value based on make, model, year, mileage, and condition.
+                </p>
+                
+                <!-- Value Estimation Form -->
+                <div class="auth-card" style="max-width: 600px; margin-bottom: 2rem;">
+                    <h2>Enter Your Car Details</h2>
+                    <form id="valueEstimateForm">
+                        <div class="form-group">
+                            <label for="carMake">Make *</label>
+                            <input type="text" id="carMake" name="make" required placeholder="e.g., Toyota">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="carModel">Model *</label>
+                            <input type="text" id="carModel" name="model" required placeholder="e.g., Camry">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="carYear">Year *</label>
+                            <input type="number" id="carYear" name="year" required min="1900" max="2024" placeholder="e.g., 2020">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="carMileage">Current Mileage *</label>
+                            <input type="number" id="carMileage" name="mileage" required min="0" placeholder="e.g., 45000">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="carCondition">Condition *</label>
+                            <select id="carCondition" name="condition" required>
+                                <option value="">Select Condition</option>
+                                <option value="new">New</option>
+                                <option value="excellent">Excellent</option>
+                                <option value="good">Good</option>
+                                <option value="fair">Fair</option>
+                                <option value="poor">Poor</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="originalPrice">Original Purchase Price (Optional)</label>
+                            <input type="number" id="originalPrice" name="original_price" min="0" placeholder="e.g., 30000">
+                            <small style="color: #6b7280;">If you know what you paid, this helps calculate depreciation</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="carFuelType">Fuel Type (Optional)</label>
+                            <select id="carFuelType" name="fuel_type">
+                                <option value="">Select Fuel Type</option>
+                                <option value="gasoline">Gasoline</option>
+                                <option value="electric">Electric</option>
+                                <option value="hybrid">Hybrid</option>
+                                <option value="diesel">Diesel</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-block">Estimate Value</button>
+                    </form>
+                </div>
+                
+                <!-- Loading indicator -->
+                <div id="loadingIndicator" class="loading" style="display: none;">
+                    <p>Calculating your car's value...</p>
+                </div>
+
+                <!-- Error message -->
+                <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+                <!-- Results -->
+                <div id="valueResult" style="display: none;">
+                    <!-- Results will be displayed here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+        </div>
+    </footer>
+
+    <script src="js/notifications.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/car-value.js"></script>
+    <script src="js/chatbot.js"></script>
+</body>
+</html>
+

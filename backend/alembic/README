@@ -1,0 +1,7 @@
+Generic single-database configuration with an async dbapi.
+
+Alembic will:
+- Load the application's Alembic configuration from `alembic.ini`
+- Load the SQLAlchemy configuration from `env.py`, which in turn imports our application's models and database configuration
+- Run migrations from the `versions/` directory
+
