@@ -24,7 +24,20 @@ EXPOSE 8080
 RUN apk add --no-cache python3
 
 # Create entrypoint script that ensures server.py exists
-RUN printf '#!/bin/sh\nif [ ! -f /data/server.py ]; then\n  printf "from http.server import SimpleHTTPRequestHandler, HTTPServer\\nimport os\\nos.chdir(\\\"/data\\\")\\nserver = HTTPServer((\\\"0.0.0.0\\\", 8080), SimpleHTTPRequestHandler)\\nserver.serve_forever()\\n" > /data/server.py\nfi\nexec python3 /data/server.py\n' > /entrypoint.sh && chmod +x /entrypoint.sh
+RUN cat > /entrypoint.sh << 'EOF'
+#!/bin/sh
+if [ ! -f /data/server.py ]; then
+  cat > /data/server.py << 'PYEOF'
+from http.server import SimpleHTTPRequestHandler, HTTPServer
+import os
+os.chdir("/data")
+server = HTTPServer(("0.0.0.0", 8080), SimpleHTTPRequestHandler)
+server.serve_forever()
+PYEOF
+fi
+exec python3 /data/server.py
+EOF
+RUN chmod +x /entrypoint.sh
 
 # Create a volume for persistent storage
 VOLUME ["/data"]
