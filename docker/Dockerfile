@@ -20,6 +20,15 @@ RUN mkdir -p /data/chroma_db
 # Create a volume for persistent storage
 VOLUME ["/data"]
 
-# Keep container running (data-only container)
-CMD ["tail", "-f", "/dev/null"]
+# Expose a port for Render (required for Web Service)
+EXPOSE 8080
+
+# Install Python for simple HTTP server
+RUN apk add --no-cache python3
+
+# Create a simple HTTP server to satisfy Render's port requirement
+RUN echo 'from http.server import SimpleHTTPRequestHandler, HTTPServer; import os; os.chdir("/data"); server = HTTPServer(("0.0.0.0", 8080), SimpleHTTPRequestHandler); server.serve_forever()' > /data/server.py
+
+# Keep container running with HTTP server
+CMD ["python3", "/data/server.py"]
 
