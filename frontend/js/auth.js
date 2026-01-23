@@ -2,12 +2,8 @@
  * Authentication JavaScript
  */
 
-var API_BASE_URL = 'http://localhost:8000';
-if (typeof window.API_BASE_URL !== 'undefined') {
-    API_BASE_URL = window.API_BASE_URL;
-} else {
-    window.API_BASE_URL = API_BASE_URL;
-}
+var API_BASE_URL = window.BACKEND_URL;
+window.API_BASE_URL = API_BASE_URL;
 
 // Handle login form submission
 document.addEventListener('DOMContentLoaded', function() {

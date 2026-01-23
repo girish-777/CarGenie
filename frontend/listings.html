@@ -228,7 +228,8 @@
             params.append('sort_by', sortBy);
             params.append('sort_order', sortOrder);
             
-            const url = 'http://localhost:8000/api/v1/cars/?' + params.toString();
+            const API_BASE_URL = window.BACKEND_URL;
+            const url = API_BASE_URL + '/api/v1/cars/?' + params.toString();
             console.log('Fetching filtered cars from:', url);
             console.log('Filters applied:', {
                 make: makeValue,
@@ -349,7 +350,8 @@
             if (searchTerm) {
                 params.append('search', searchTerm);
             }
-            const url = 'http://localhost:8000/api/v1/cars/?' + params.toString();
+            const API_BASE_URL = window.BACKEND_URL;
+            const url = API_BASE_URL + '/api/v1/cars/?' + params.toString();
             
             console.log('Fetching from:', url);
             
@@ -406,6 +408,13 @@
                 });
         };
         
+    </script>
+    <script>
+        // Initialize BACKEND_URL from environment or use default
+        // BACKEND_URL must be set before loading scripts
+        if (!window.BACKEND_URL) {
+            console.error('BACKEND_URL is not set! Please set window.BACKEND_URL before loading scripts.');
+        }
     </script>
     <script src="js/notifications.js"></script>
     <script src="js/main.js"></script>

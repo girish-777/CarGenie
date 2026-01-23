@@ -2,7 +2,7 @@
  * Main JavaScript for navigation and authentication state
  */
 
-var API_BASE_URL = 'http://localhost:8000';
+var API_BASE_URL = window.BACKEND_URL;
 if (typeof window.API_BASE_URL !== 'undefined') {
     API_BASE_URL = window.API_BASE_URL;
 } else {
