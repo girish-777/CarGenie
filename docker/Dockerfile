@@ -23,15 +23,13 @@ EXPOSE 8080
 # Install Python for simple HTTP server
 RUN apk add --no-cache python3
 
-# Copy server.py file (no escaping issues!)
-COPY docker/server.py /server.py.template
+# Copy server.py file to a safe location (outside /data to avoid volume issues)
+COPY docker/server.py /app/server.py
 
-# Create entrypoint script that ensures server.py exists in /data
+# Create entrypoint script that changes to /data and runs server
 RUN echo '#!/bin/sh' > /entrypoint.sh && \
-    echo 'if [ ! -f /data/server.py ]; then' >> /entrypoint.sh && \
-    echo '  cp /server.py.template /data/server.py' >> /entrypoint.sh && \
-    echo 'fi' >> /entrypoint.sh && \
-    echo 'exec python3 /data/server.py' >> /entrypoint.sh && \
+    echo 'cd /data' >> /entrypoint.sh && \
+    echo 'exec python3 /app/server.py' >> /entrypoint.sh && \
     chmod +x /entrypoint.sh
 
 # Create a volume for persistent storage
