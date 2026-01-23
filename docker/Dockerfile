@@ -23,21 +23,20 @@ EXPOSE 8080
 # Install Python for simple HTTP server
 RUN apk add --no-cache python3
 
-# Create entrypoint script that ensures server.py exists
-RUN cat > /entrypoint.sh << 'EOF'
-#!/bin/sh
-if [ ! -f /data/server.py ]; then
-  cat > /data/server.py << 'PYEOF'
-from http.server import SimpleHTTPRequestHandler, HTTPServer
-import os
-os.chdir("/data")
-server = HTTPServer(("0.0.0.0", 8080), SimpleHTTPRequestHandler)
-server.serve_forever()
-PYEOF
-fi
-exec python3 /data/server.py
-EOF
-RUN chmod +x /entrypoint.sh
+# Create server.py template in a safe location
+RUN echo 'from http.server import SimpleHTTPRequestHandler, HTTPServer' > /server.py.template && \
+    echo 'import os' >> /server.py.template && \
+    echo 'os.chdir("/data")' >> /server.py.template && \
+    echo 'server = HTTPServer(("0.0.0.0", 8080), SimpleHTTPRequestHandler)' >> /server.py.template && \
+    echo 'server.serve_forever()' >> /server.py.template
+
+# Create entrypoint script that copies server.py if missing
+RUN echo '#!/bin/sh' > /entrypoint.sh && \
+    echo 'if [ ! -f /data/server.py ]; then' >> /entrypoint.sh && \
+    echo '  cp /server.py.template /data/server.py' >> /entrypoint.sh && \
+    echo 'fi' >> /entrypoint.sh && \
+    echo 'exec python3 /data/server.py' >> /entrypoint.sh && \
+    chmod +x /entrypoint.sh
 
 # Create a volume for persistent storage
 VOLUME ["/data"]
