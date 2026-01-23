@@ -17,9 +17,6 @@ COPY db_deploy/ /data/
 # Ensure chroma_db directory exists (in case it's empty)
 RUN mkdir -p /data/chroma_db
 
-# Create a volume for persistent storage
-VOLUME ["/data"]
-
 # Expose a port for Render (required for Web Service)
 EXPOSE 8080
 
@@ -27,7 +24,10 @@ EXPOSE 8080
 RUN apk add --no-cache python3
 
 # Create a simple HTTP server to satisfy Render's port requirement
-RUN echo 'from http.server import SimpleHTTPRequestHandler, HTTPServer; import os; os.chdir("/data"); server = HTTPServer(("0.0.0.0", 8080), SimpleHTTPRequestHandler); server.serve_forever()' > /data/server.py
+RUN printf 'from http.server import SimpleHTTPRequestHandler, HTTPServer\nimport os\nos.chdir("/data")\nserver = HTTPServer(("0.0.0.0", 8080), SimpleHTTPRequestHandler)\nserver.serve_forever()\n' > /data/server.py && chmod +x /data/server.py
+
+# Create a volume for persistent storage (after server.py is created)
+VOLUME ["/data"]
 
 # Keep container running with HTTP server
 CMD ["python3", "/data/server.py"]
