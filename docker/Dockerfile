@@ -23,19 +23,22 @@ EXPOSE 8080
 # Install Python for simple HTTP server
 RUN apk add --no-cache python3
 
-# Create server.py template in a safe location
-RUN echo 'from http.server import SimpleHTTPRequestHandler, HTTPServer' > /server.py.template && \
-    echo 'import os' >> /server.py.template && \
-    echo 'os.chdir("/data")' >> /server.py.template && \
-    echo 'server = HTTPServer(("0.0.0.0", 8080), SimpleHTTPRequestHandler)' >> /server.py.template && \
-    echo 'server.serve_forever()' >> /server.py.template
+# Create server.py template in a safe location using printf for proper escaping
+RUN printf 'from http.server import SimpleHTTPRequestHandler, HTTPServer\n' > /server.py.template && \
+    printf 'import os\n' >> /server.py.template && \
+    printf 'os.chdir("/data")\n' >> /server.py.template && \
+    printf 'server = HTTPServer(("0.0.0.0", 8080), SimpleHTTPRequestHandler)\n' >> /server.py.template && \
+    printf 'server.serve_forever()\n' >> /server.py.template
 
-# Create entrypoint script that copies server.py if missing
-RUN echo '#!/bin/sh' > /entrypoint.sh && \
-    echo 'if [ ! -f /data/server.py ]; then' >> /entrypoint.sh && \
-    echo '  cp /server.py.template /data/server.py' >> /entrypoint.sh && \
-    echo 'fi' >> /entrypoint.sh && \
-    echo 'exec python3 /data/server.py' >> /entrypoint.sh && \
+# Also create it directly in /data during build (will be overwritten by volume, but entrypoint will restore)
+RUN cp /server.py.template /data/server.py
+
+# Create entrypoint script that ensures server.py exists
+RUN printf '#!/bin/sh\n' > /entrypoint.sh && \
+    printf 'if [ ! -f /data/server.py ]; then\n' >> /entrypoint.sh && \
+    printf '  cp /server.py.template /data/server.py\n' >> /entrypoint.sh && \
+    printf 'fi\n' >> /entrypoint.sh && \
+    printf 'exec python3 /data/server.py\n' >> /entrypoint.sh && \
     chmod +x /entrypoint.sh
 
 # Create a volume for persistent storage
