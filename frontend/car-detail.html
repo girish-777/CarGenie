@@ -55,13 +55,7 @@
         </div>
     </footer>
 
-    <script>
-        // Initialize BACKEND_URL from environment or use default for local development
-        if (!window.BACKEND_URL) {
-            window.BACKEND_URL = 'http://localhost:8000';
-            console.warn('BACKEND_URL not set, using default:', window.BACKEND_URL);
-        }
-    </script>
+    <script src="js/env-config.js"></script>
     <script src="js/notifications.js"></script>
     <script src="js/main.js"></script>
     <script src="js/favorites.js"></script>
