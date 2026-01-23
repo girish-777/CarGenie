@@ -25,18 +25,20 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
     # CORS - can be a string (comma-separated) or list
-    CORS_ORIGINS: Union[str, list[str]] = "*"
+    # Default includes localhost and common Render frontend URLs
+    CORS_ORIGINS: Union[str, list[str]] = "http://localhost:8000,http://127.0.0.1:8000,http://localhost:3000,https://cargenie-frontend.onrender.com"
     
     @field_validator('CORS_ORIGINS', mode='before')
     @classmethod
     def parse_cors_origins(cls, v):
         """Parse CORS_ORIGINS from string or list"""
         if isinstance(v, str):
-            # If it's "*", return ["*"]
+            # If it's "*", return ["*"] (but note: cannot use with allow_credentials=True)
             if v.strip() == "*":
                 return ["*"]
             # Otherwise split by comma
-            return [origin.strip() for origin in v.split(",") if origin.strip()]
+            origins = [origin.strip() for origin in v.split(",") if origin.strip()]
+            return origins if origins else ["*"]
         return v
     
     # OpenAI (for future use)
