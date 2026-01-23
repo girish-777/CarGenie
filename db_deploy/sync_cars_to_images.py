@@ -5,8 +5,8 @@ Only keeps cars that match the 10 images in frontend/images/
 import sys
 import os
 
-# Add backend to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'backend'))
+# Add backend to path (go up one level from db_deploy to project root, then into backend)
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'backend'))
 
 from app.db.database import SessionLocal
 from app.models import Car

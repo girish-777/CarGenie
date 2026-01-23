@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 # Get project root directory
 _base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 _project_root = os.path.dirname(_base_dir)
-_chroma_db_path = os.path.join(_project_root, 'chroma_db').replace('\\', '/')
+_chroma_db_path = os.path.join(_project_root, 'db_deploy', 'chroma_db').replace('\\', '/')
 
 
 class VectorDB:

@@ -10,7 +10,7 @@ import os
 # Calculate project root: backend/app/core/config.py -> go up 3 levels
 _base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 _project_root = os.path.dirname(_base_dir)  # Go up one more level from backend/
-_db_path = os.path.join(_project_root, 'automobile.db').replace('\\', '/')
+_db_path = os.path.join(_project_root, 'db_deploy', 'automobile.db').replace('\\', '/')
 _env_file_path = os.path.join(_project_root, ".env")
 
 class Settings(BaseSettings):

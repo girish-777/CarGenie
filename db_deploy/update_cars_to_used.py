@@ -4,8 +4,8 @@ Update all cars to be used cars with realistic mileage
 import sys
 import os
 
-# Add backend directory to path
-backend_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'backend')
+# Add backend directory to path (go up one level from db_deploy to project root, then into backend)
+backend_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'backend')
 sys.path.insert(0, backend_path)
 
 from sqlalchemy.orm import Session

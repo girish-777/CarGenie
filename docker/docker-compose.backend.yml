@@ -1,0 +1,40 @@
+version: '3.8'
+
+# Docker Compose configuration for Backend with Database
+# This file shows how to connect the backend to the database container
+
+services:
+  # Database data container
+  db-data:
+    image: ai-automobile-db:latest
+    container_name: ai-automobile-db
+    volumes:
+      - db-storage:/data
+    command: tail -f /dev/null
+    restart: unless-stopped
+
+  # Backend service (example - adjust based on your backend setup)
+  backend:
+    # Uncomment and configure based on your backend Dockerfile
+    # build:
+    #   context: ../backend
+    #   dockerfile: Dockerfile
+    # Or use an existing image
+    # image: your-backend-image:latest
+    container_name: ai-automobile-backend
+    volumes:
+      # Mount database files from the db-data container
+      - db-storage:/app/db_deploy
+    environment:
+      # Override DATABASE_URL if needed (or let it use default from config.py)
+      - DATABASE_URL=sqlite:////app/db_deploy/automobile.db
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db-data
+    restart: unless-stopped
+
+volumes:
+  db-storage:
+    driver: local
+

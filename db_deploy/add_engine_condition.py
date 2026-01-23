@@ -5,8 +5,8 @@ import sys
 import os
 import sqlite3
 
-# Add backend to path
-backend_dir = os.path.dirname(__file__)
+# Add backend to path (go up one level from db_deploy to project root, then into backend)
+backend_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'backend')
 if backend_dir not in sys.path:
     sys.path.insert(0, backend_dir)
 

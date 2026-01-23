@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  # Database data container
+  # This service provides persistent storage for SQLite and ChromaDB files
+  db-data:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: ai-automobile-db:latest
+    container_name: ai-automobile-db
+    volumes:
+      # Named volume for database persistence
+      - db-storage:/data
+    # Keep container running
+    command: tail -f /dev/null
+    restart: unless-stopped
+
+volumes:
+  # Named volume for database files
+  db-storage:
+    driver: local
+

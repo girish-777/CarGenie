@@ -4,8 +4,8 @@ Setup script to initialize the database
 import sys
 import os
 
-# Add backend to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'backend'))
+# Add backend to path (go up one level from db_deploy to project root, then into backend)
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'backend'))
 
 from app.db.database import engine, Base
 from app.models import *  # Import all models

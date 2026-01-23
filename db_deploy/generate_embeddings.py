@@ -5,8 +5,8 @@ Run this after setting up ChromaDB and OpenAI API key
 import sys
 import os
 
-# Add parent directory to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Add backend to path (go up one level from db_deploy to project root, then into backend)
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'backend'))
 
 from sqlalchemy.orm import Session
 from app.db.database import SessionLocal, engine

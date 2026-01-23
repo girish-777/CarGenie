@@ -5,8 +5,8 @@ import sys
 import os
 import sqlite3
 
-# Add backend to path
-sys.path.insert(0, os.path.dirname(__file__))
+# Add backend to path (go up one level from db_deploy to project root, then into backend)
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'backend'))
 
 from app.core.config import settings
 
