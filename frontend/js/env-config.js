@@ -20,32 +20,43 @@
     
     // Set BACKEND_URL based on environment
     if (isRender) {
-        // On Render: Try to get from meta tag, or use naming convention
-        // Option 1: Check for meta tag with backend URL
+        // On Render: Try multiple methods to get backend URL
+        // Method 1: Check for meta tag with backend URL
         const backendMeta = document.querySelector('meta[name="backend-url"]');
         if (backendMeta) {
             window.BACKEND_URL = backendMeta.getAttribute('content');
-            console.log('BACKEND_URL from meta tag:', window.BACKEND_URL);
+            console.log('[ENV-CONFIG] BACKEND_URL from meta tag:', window.BACKEND_URL);
         } else {
-            // Option 2: Use naming convention (frontend name -> backend name)
+            // Method 2: Use naming convention (frontend name -> backend name)
             // If frontend is "cargenie-frontend", backend might be "cargenie-backend"
             const frontendName = window.location.hostname.split('.')[0];
-            const backendName = frontendName.replace('-frontend', '-backend');
+            let backendName = frontendName.replace('-frontend', '-backend');
+            
+            // If no -frontend suffix, try common patterns
+            if (backendName === frontendName) {
+                // Try adding -backend suffix
+                backendName = frontendName + '-backend';
+            }
+            
             window.BACKEND_URL = `https://${backendName}.onrender.com`;
-            console.log('Render environment detected. BACKEND_URL set to:', window.BACKEND_URL);
-            console.log('If this is wrong, add: <meta name="backend-url" content="https://your-backend-url.onrender.com"> in <head>');
+            console.log('[ENV-CONFIG] Render environment detected.');
+            console.log('[ENV-CONFIG] Frontend name:', frontendName);
+            console.log('[ENV-CONFIG] BACKEND_URL set to:', window.BACKEND_URL);
+            console.log('[ENV-CONFIG] If this is wrong, add: <meta name="backend-url" content="https://your-backend-url.onrender.com"> in <head>');
         }
     } else if (isLocalhost) {
         // Local development: Use localhost
         window.BACKEND_URL = 'http://localhost:8000';
-        console.log('Local development detected. BACKEND_URL set to:', window.BACKEND_URL);
+        console.log('[ENV-CONFIG] Local development detected. BACKEND_URL set to:', window.BACKEND_URL);
     } else {
         // Fallback: Try to detect or use a default
         window.BACKEND_URL = 'http://localhost:8000';
-        console.warn('Could not detect environment. Using default BACKEND_URL:', window.BACKEND_URL);
+        console.warn('[ENV-CONFIG] Could not detect environment. Using default BACKEND_URL:', window.BACKEND_URL);
     }
     
     // Also set API_BASE_URL for compatibility
     window.API_BASE_URL = window.BACKEND_URL;
+    console.log('[ENV-CONFIG] Final BACKEND_URL:', window.BACKEND_URL);
+    console.log('[ENV-CONFIG] Final API_BASE_URL:', window.API_BASE_URL);
 })();
 

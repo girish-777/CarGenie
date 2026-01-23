@@ -2,12 +2,28 @@
  * Car listings JavaScript
  */
 
-var API_BASE_URL = window.BACKEND_URL;
-if (typeof window.API_BASE_URL !== 'undefined') {
-    API_BASE_URL = window.API_BASE_URL;
-} else {
-    window.API_BASE_URL = API_BASE_URL;
+// Get API_BASE_URL from window.BACKEND_URL or window.API_BASE_URL
+var API_BASE_URL = window.BACKEND_URL || window.API_BASE_URL;
+
+// If still undefined, use fallback
+if (!API_BASE_URL) {
+    // Check if we're on Render
+    const isRender = window.location.hostname.includes('onrender.com');
+    if (isRender) {
+        // Try to construct backend URL from frontend name
+        const frontendName = window.location.hostname.split('.')[0];
+        const backendName = frontendName.replace('-frontend', '-backend');
+        API_BASE_URL = `https://${backendName}.onrender.com`;
+        console.warn('API_BASE_URL not set, using constructed URL:', API_BASE_URL);
+    } else {
+        // Local development
+        API_BASE_URL = 'http://localhost:8000';
+        console.warn('API_BASE_URL not set, using localhost:', API_BASE_URL);
+    }
 }
+
+window.API_BASE_URL = API_BASE_URL;
+console.log('[DEBUG] listings.js: API_BASE_URL set to:', API_BASE_URL);
 
 // Make variables globally available for inline script
 window.currentPage = 1;
@@ -307,11 +323,21 @@ async function loadCars(page = 1) {
         if (currentFilters.sort_by) params.append('sort_by', currentFilters.sort_by);
         if (currentFilters.sort_order) params.append('sort_order', currentFilters.sort_order);
         
+        if (!API_BASE_URL) {
+            throw new Error('API_BASE_URL is not set. Please check BACKEND_URL configuration.');
+        }
+        
         const url = `${API_BASE_URL}/api/v1/cars/?${params}`;
         console.log('[DEBUG] loadCars: Fetching from', url);
+        console.log('[DEBUG] loadCars: API_BASE_URL =', API_BASE_URL);
         console.log('[DEBUG] loadCars: Query params', params.toString());
         
-        const response = await fetch(url);
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
         console.log('[DEBUG] loadCars: Response status', response.status, response.statusText);
         
         if (!response.ok) {

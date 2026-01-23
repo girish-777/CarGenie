@@ -7,6 +7,8 @@
     <link rel="icon" type="image/x-icon" href="images/logo%202%20%281%29.ico">
     <link rel="apple-touch-icon" href="images/logo%202%20%281%29.ico">
     <link rel="stylesheet" href="css/style.css">
+    <!-- Backend URL - Update this with your actual Render backend URL -->
+    <!-- <meta name="backend-url" content="https://your-backend-name.onrender.com"> -->
 </head>
 <body>
     <nav class="navbar">
@@ -228,7 +230,11 @@
             params.append('sort_by', sortBy);
             params.append('sort_order', sortOrder);
             
-            const API_BASE_URL = window.BACKEND_URL;
+            const API_BASE_URL = window.BACKEND_URL || window.API_BASE_URL || 'http://localhost:8000';
+            if (!API_BASE_URL) {
+                console.error('API_BASE_URL is not set!');
+                return;
+            }
             const url = API_BASE_URL + '/api/v1/cars/?' + params.toString();
             console.log('Fetching filtered cars from:', url);
             console.log('Filters applied:', {
@@ -350,7 +356,11 @@
             if (searchTerm) {
                 params.append('search', searchTerm);
             }
-            const API_BASE_URL = window.BACKEND_URL;
+            const API_BASE_URL = window.BACKEND_URL || window.API_BASE_URL || 'http://localhost:8000';
+            if (!API_BASE_URL) {
+                console.error('API_BASE_URL is not set!');
+                return;
+            }
             const url = API_BASE_URL + '/api/v1/cars/?' + params.toString();
             
             console.log('Fetching from:', url);
