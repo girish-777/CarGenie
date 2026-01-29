@@ -58,12 +58,11 @@ async function loadRecommendations(containerId, nResults = 10) {
             return;
         }
         
-        // Ensure at least 3 recommendations are shown (for home page)
-        // If less than 3, we'll show what we have but log a warning
-        if (data.recommendations.length < 3) {
-            console.warn('[DEBUG] loadRecommendations: Only', data.recommendations.length, 'recommendations available (need at least 3)');
-        }
-        const recommendationsToShow = data.recommendations.slice(0, Math.max(3, data.recommendations.length));
+        // Limit to 6 recommendations for home page display
+        // If less than 6, we'll show what we have
+        const maxRecommendations = 6;
+        const recommendationsToShow = data.recommendations.slice(0, Math.min(maxRecommendations, data.recommendations.length));
+        console.log('[DEBUG] loadRecommendations: Showing', recommendationsToShow.length, 'out of', data.recommendations.length, 'recommendations');
         
         // Display recommendations
         displayRecommendations(container, recommendationsToShow, data.user_preferences);
@@ -92,8 +91,9 @@ function displayRecommendations(container, recommendations, userPreferences) {
         </div>
     `;
     
-    // Create grid - show at least 3 cars (or all available if less than 3)
-    const carsToShow = recommendations.slice(0, Math.max(3, recommendations.length));
+    // Create grid - limit to 6 cars for home page display
+    const maxCars = 6;
+    const carsToShow = recommendations.slice(0, Math.min(maxCars, recommendations.length));
     html += '<div class="cars-grid" style="margin-top: 1.5rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">';
     
     carsToShow.forEach((rec) => {

@@ -67,7 +67,7 @@ SAMPLE_CARS = [
         "engine_condition": "good",
         "location": "San Francisco, CA",
         "description": "2022 Honda Civic with modern features and great reliability. Engine in good condition - well-maintained, regularly serviced. Normal wear for age and mileage.",
-        "image_urls": ["images/2023-Toyota-Camry.webp"],  # Using available image
+        "image_urls": ["images/BMW 3 Series.jpeg"],  # Using available sedan image
         "vin": "19XFC2F59NE234567",
         "specs": {
             "engine_size": 2.0,
@@ -107,7 +107,7 @@ SAMPLE_CARS = [
         "engine_condition": "excellent",
         "location": "Seattle, WA",
         "description": "2023 Tesla Model 3 with Autopilot. Low mileage, like new condition. Electric motor in excellent condition - virtually no wear. Full warranty remaining.",
-        "image_urls": ["images/2024 Kia EV6.jpg"],  # Using available EV image
+        "image_urls": ["images/2024 Kia EV6.jpeg"],  # Using available EV image
         "vin": "5YJ3E1EB8KF345678",
         "specs": {
             "engine_size": 0.0,  # Electric
@@ -187,7 +187,7 @@ SAMPLE_CARS = [
         "engine_condition": "good",
         "location": "New York, NY",
         "description": "2023 BMW 3 Series with premium package. Engine in good condition - runs well, properly maintained. Used vehicle with low mileage.",
-        "image_urls": ["images/BMW 3 Series.jpg"],
+        "image_urls": ["images/BMW 3 Series.jpeg"],
         "vin": "WBA8A9C58ED567890",
         "specs": {
             "engine_size": 2.0,
@@ -227,7 +227,7 @@ SAMPLE_CARS = [
         "engine_condition": "good",
         "location": "Miami, FL",
         "description": "2022 Mercedes-Benz C-Class with luxury features. Engine in good condition - smooth operation, well-maintained. Single owner.",
-        "image_urls": ["images/2024 Mercedes-Benz C-Class.jpg"],
+        "image_urls": ["images/2024 Mercedes-Benz C-Class.jpeg"],
         "vin": "WDDWF4KB5NR678901",
         "specs": {
             "engine_size": 2.0,
@@ -267,7 +267,7 @@ SAMPLE_CARS = [
         "engine_condition": "excellent",
         "location": "Chicago, IL",
         "description": "2023 Audi A4 with premium features. Engine in excellent condition - like new, low mileage. Excellent overall condition.",
-        "image_urls": ["images/2024 Mercedes-Benz C-Class.jpg"],  # Using available luxury car image
+        "image_urls": ["images/2024 Mercedes-Benz EQS.jpg"],  # Using available luxury car image
         "vin": "WAUAF2AF8DN789012",
         "specs": {
             "engine_size": 2.0,
@@ -307,7 +307,7 @@ SAMPLE_CARS = [
         "engine_condition": "fair",
         "location": "Phoenix, AZ",
         "description": "2022 Nissan Altima with higher mileage. Engine in fair condition - functional but shows some wear. Reliable daily driver.",
-        "image_urls": ["images/2024 Kia Sportage.jpg"],  # Using available sedan image
+        "image_urls": ["images/2024 Kia Sportage.jpeg"],  # Using available sedan image
         "vin": "1N4BL4CV9NC890123",
         "specs": {
             "engine_size": 2.5,
@@ -347,7 +347,7 @@ SAMPLE_CARS = [
         "engine_condition": "fair",
         "location": "Houston, TX",
         "description": "2022 Chevrolet Silverado 1500. Engine in fair condition - works well but shows typical wear. Great for towing and hauling.",
-        "image_urls": ["images/2024 Ford F-150 Lightning.jpg"],  # Using available truck image
+        "image_urls": ["images/2024 Ford F-150 Lightning.jpeg"],  # Using available truck image
         "vin": "1GCVKREC2NZ901234",
         "specs": {
             "engine_size": 5.3,
@@ -387,7 +387,7 @@ SAMPLE_CARS = [
         "engine_condition": "excellent",
         "location": "Atlanta, GA",
         "description": "2023 Hyundai Elantra with modern tech features. Engine in excellent condition - very low mileage, runs perfectly. Excellent warranty remaining.",
-        "image_urls": ["images/2023-Toyota-Camry.webp"],  # Using available sedan image
+        "image_urls": ["images/2024 Toyota bZ4X.jpeg"],  # Using available sedan image
         "vin": "5NPE34AF8PH012345",
         "specs": {
             "engine_size": 2.0,

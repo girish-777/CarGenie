@@ -90,6 +90,10 @@ class CarListResponse(BaseModel):
     page: int
     page_size: int
     total_pages: int
+    # Optional typo-tolerant search metadata
+    original_search: Optional[str] = None
+    corrected_search: Optional[str] = None
+    correction_score: Optional[float] = None
 
 
 class CarDetailResponse(CarResponse):

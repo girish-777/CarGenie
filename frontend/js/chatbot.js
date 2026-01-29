@@ -16,6 +16,188 @@ let conversationHistory = [];
 // Chatbot state
 let chatbotOpen = false;
 let currentCarId = null;
+let lastUserQuestion = '';
+
+// Suggestion history (last N user searches/questions)
+const RECENT_SUGGESTIONS_KEY = 'cargenie_chatbot_recent_searches';
+const MAX_RECENT_SUGGESTIONS = 5;
+
+function loadRecentSuggestions() {
+    try {
+        const raw = localStorage.getItem(RECENT_SUGGESTIONS_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        if (!Array.isArray(parsed)) return [];
+        return parsed
+            .filter(s => typeof s === 'string')
+            .map(s => s.trim())
+            .filter(Boolean);
+    } catch {
+        return [];
+    }
+}
+
+function saveRecentSuggestions(items) {
+    try {
+        localStorage.setItem(RECENT_SUGGESTIONS_KEY, JSON.stringify(items));
+    } catch {
+        // ignore storage errors (private mode etc.)
+    }
+}
+
+function addRecentSuggestion(query) {
+    const q = (query || '').trim();
+    if (!q) return;
+
+    const recent = loadRecentSuggestions();
+    const normalized = q.toLowerCase();
+    const deduped = recent.filter(x => x.toLowerCase() !== normalized);
+    deduped.unshift(q);
+    saveRecentSuggestions(deduped.slice(0, MAX_RECENT_SUGGESTIONS));
+}
+
+function getBaseSuggestions() {
+    if (currentCarId) {
+        return [
+            'What are the key features of this car?',
+            'What is the fuel economy?',
+            'What do reviews say?',
+        ];
+    }
+    return [
+        'What should I look for when buying a car?',
+        'What is the difference between electric and gasoline cars?',
+        'How do I compare cars?',
+    ];
+}
+
+function generateFollowUpSuggestions(question) {
+    const q = (question || '').toLowerCase();
+    if (!q.trim()) return [];
+
+    // Car-specific vs general phrasing
+    const aboutThisCar = currentCarId ? 'this car' : 'a car';
+
+    // Helper to build unique suggestions
+    const suggestions = [];
+    const add = (s) => {
+        const t = (s || '').trim();
+        if (!t) return;
+        const norm = t.toLowerCase();
+        if (!suggestions.some(x => x.toLowerCase() === norm)) suggestions.push(t);
+    };
+
+    // Keyword-driven follow-ups
+    if (q.includes('buy') || q.includes('purchase') || q.includes('what should i look for')) {
+        add('What are the most important things to check before buying?');
+        add('How can I spot a good deal vs overpriced listings?');
+        add('What mileage/year range is safest for my budget?');
+        add('What questions should I ask the seller/dealer?');
+        add('What paperwork should I verify before purchase?');
+    } else if (q.includes('compare') || q.includes('difference') || q.includes('vs')) {
+        add('Can you compare reliability and maintenance costs?');
+        add('Which option is better for city driving?');
+        add('Which option holds value better (resale)?');
+        add('How do running costs differ over 5 years?');
+        add('What are common issues to watch out for?');
+    } else if (q.includes('electric') || q.includes('ev') || q.includes('battery')) {
+        add('How far does an EV typically go on a full charge?');
+        add('What should I check about battery health when buying used?');
+        add('How much does charging cost vs gas per month?');
+        add('What charging options do I need at home?');
+        add('Are EV maintenance costs lower than gas cars?');
+    } else if (q.includes('price') || q.includes('budget') || q.includes('cost') || q.includes('afford')) {
+        add(`What affects the price of ${aboutThisCar} the most?`);
+        add('What is a fair price range for this type of car?');
+        add('How can I negotiate the price effectively?');
+        add('What ownership costs should I budget for (insurance, maintenance)?');
+        add('Should I prioritize lower price or lower mileage?');
+    } else if (q.includes('mileage') || q.includes('odometer')) {
+        add('What mileage is considered “high” for this model/year?');
+        add('How does mileage impact expected maintenance?');
+        add('Is a newer car with higher mileage better than an older low‑mileage car?');
+        add('What components wear out first at this mileage?');
+        add('What service history should I look for?');
+    } else if (q.includes('reliab') || q.includes('problem') || q.includes('issue')) {
+        add('What are the most common problems for this model?');
+        add('What maintenance schedule should I follow?');
+        add('How can I check for past accident or flood damage?');
+        add('What should a mechanic inspect in a pre‑purchase inspection?');
+        add('What warranty options are worth it?');
+    } else if (q.includes('fuel') || q.includes('mpg') || q.includes('economy')) {
+        add(`What is the real‑world fuel economy for ${aboutThisCar}?`);
+        add('How can I improve fuel economy with driving habits?');
+        add('Does fuel type (gas/hybrid/diesel) change maintenance costs?');
+        add('Is hybrid worth it for my driving pattern?');
+        add('How do fuel costs compare monthly for my mileage?');
+    } else if (q.includes('feature') || q.includes('tech') || q.includes('interior') || q.includes('safety')) {
+        add('Which safety features matter most for daily driving?');
+        add('What trim level gives best value for features?');
+        add('What should I check during a test drive for comfort/noise?');
+        add('Are there any missing features I should avoid?');
+        add('How do crash test ratings compare for similar cars?');
+    } else {
+        // Generic follow-ups when we can't classify the question well
+        add(`What are the pros and cons of ${aboutThisCar}?`);
+        add('What similar cars should I also consider?');
+        add('What should I check during a test drive?');
+        add('How reliable is this type of car long term?');
+        add('What are typical maintenance and running costs?');
+    }
+
+    // Ensure we return at most 5, but always try to return 5
+    return suggestions.slice(0, 5);
+}
+
+function _escapeHtml(text) {
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function _attachSuggestionHandlers(container) {
+    const buttons = container.querySelectorAll('button.suggestion-chip[data-suggestion]');
+    buttons.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const value = btn.getAttribute('data-suggestion') || '';
+            if (value) {
+                window.sendSuggestion(value);
+            }
+        });
+    });
+}
+
+function renderChatbotSuggestions() {
+    const suggestionsContainer = document.getElementById('chatbotSuggestions');
+    if (!suggestionsContainer) return;
+
+    const base = getBaseSuggestions();
+    const followUps = generateFollowUpSuggestions(lastUserQuestion);
+
+    // Do NOT create separate boxes/sections. Show a single suggestions row.
+    // Prefer follow-ups based on the previous question; fallback to base suggestions.
+    const suggestionsToShow =
+        followUps && followUps.length >= 3
+            ? followUps.slice(0, 5)
+            : base.slice(0, 3);
+
+    suggestionsContainer.innerHTML = `
+        <div class="suggestion-chips">
+            <span class="suggestions-label">Try asking:</span>
+            ${suggestionsToShow
+                .map(
+                    (q) =>
+                        `<button type="button" class="suggestion-chip" data-suggestion="${_escapeHtml(q)}">${_escapeHtml(q)}</button>`
+                )
+                .join('')}
+        </div>
+    `;
+    suggestionsContainer.style.display = 'block';
+    _attachSuggestionHandlers(suggestionsContainer);
+}
 
 /**
  * Initialize global chatbot widget
@@ -63,18 +245,7 @@ window.initGlobalChatbot = function() {
                 </div>
                 
                 <div class="chatbot-panel-suggestions" id="chatbotSuggestions">
-                    <p class="suggestions-label">Try asking:</p>
-                    <div class="suggestion-chips">
-                        ${currentCarId ? `
-                            <button class="suggestion-chip" onclick="sendSuggestion('What are the key features of this car?')">Key features?</button>
-                            <button class="suggestion-chip" onclick="sendSuggestion('What is the fuel economy?')">Fuel economy?</button>
-                            <button class="suggestion-chip" onclick="sendSuggestion('What do reviews say?')">Reviews?</button>
-                        ` : `
-                            <button class="suggestion-chip" onclick="sendSuggestion('What should I look for when buying a car?')">Buying tips?</button>
-                            <button class="suggestion-chip" onclick="sendSuggestion('What is the difference between electric and gasoline cars?')">Electric vs Gas?</button>
-                            <button class="suggestion-chip" onclick="sendSuggestion('How do I compare cars?')">Compare cars?</button>
-                        `}
-                    </div>
+                    <!-- Filled by renderChatbotSuggestions() -->
                 </div>
                 
                 <div class="chatbot-panel-input">
@@ -97,6 +268,9 @@ window.initGlobalChatbot = function() {
     document.body.insertAdjacentHTML('beforeend', chatbotHTML);
     
     console.log('[DEBUG] initGlobalChatbot: Global chatbot widget created');
+
+    // Render suggestions (base + recent)
+    renderChatbotSuggestions();
 }
 
 /**
@@ -113,6 +287,8 @@ window.toggleChatbot = function() {
     if (chatbotOpen) {
         panel.style.display = 'flex';
         toggleBtn.classList.add('active');
+        // Refresh suggestions each time we open
+        renderChatbotSuggestions();
         // Focus input
         setTimeout(() => {
             const input = document.getElementById('chatbotInput');
@@ -163,6 +339,9 @@ window.sendChatbotMessage = async function() {
     if (!message) {
         return;
     }
+
+    // Track the latest question to generate follow-up suggestions
+    lastUserQuestion = message;
     
     // Clear input
     input.value = '';
@@ -171,9 +350,11 @@ window.sendChatbotMessage = async function() {
     input.disabled = true;
     if (sendBtn) sendBtn.disabled = true;
     
-    // Hide suggestions after first message
+    // Track last 5 searches/questions for suggestion chips
+    addRecentSuggestion(message);
+    // Keep suggestions visible and updated (show at least last 5 searches)
     if (suggestionsContainer) {
-        suggestionsContainer.style.display = 'none';
+        renderChatbotSuggestions();
     }
     
     // Add user message to UI
@@ -244,6 +425,9 @@ window.sendChatbotMessage = async function() {
         
         // Add bot response to UI
         addMessageToChat(messagesContainer, aiResponse, 'bot');
+
+        // After receiving the answer, re-render suggestions so user always sees follow-ups
+        renderChatbotSuggestions();
         
         // Add bot response to history
         conversationHistory.push({
@@ -348,14 +532,7 @@ window.updateChatbotContext = function(carId) {
     }
     
     if (suggestions) {
-        suggestions.innerHTML = `
-            <p class="suggestions-label">Try asking:</p>
-            <div class="suggestion-chips">
-                <button class="suggestion-chip" onclick="sendSuggestion('What are the key features of this car?')">Key features?</button>
-                <button class="suggestion-chip" onclick="sendSuggestion('What is the fuel economy?')">Fuel economy?</button>
-                <button class="suggestion-chip" onclick="sendSuggestion('What do reviews say?')">Reviews?</button>
-            </div>
-        `;
+        renderChatbotSuggestions();
     }
     
     // Update welcome message

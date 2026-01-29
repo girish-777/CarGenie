@@ -1672,7 +1672,9 @@ footer {
 .suggestions-label {
     font-size: 0.875rem;
     color: #6b7280;
-    margin: 0 0 0.5rem 0;
+    margin: 0 0.5rem 0 0;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .chatbot-suggestions {
@@ -1685,6 +1687,7 @@ footer {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+    align-items: center;
 }
 
 .suggestion-chip {

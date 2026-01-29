@@ -271,6 +271,14 @@ async function loadCars(page = 1) {
     const loadingIndicator = document.getElementById('loadingIndicator');
     const errorMessage = document.getElementById('errorMessage');
     const carsGrid = document.getElementById('carsGrid');
+    const listingsContent = carsGrid ? carsGrid.parentElement : null;
+    let searchHint = document.getElementById('searchHint');
+    if (!searchHint && listingsContent) {
+        searchHint = document.createElement('div');
+        searchHint.id = 'searchHint';
+        searchHint.style.cssText = 'display:none; margin: 0 0 1rem 0; padding: 0.75rem 1rem; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; border-radius: 0.5rem; font-size: 0.95rem;';
+        listingsContent.insertBefore(searchHint, carsGrid);
+    }
     
     if (!loadingIndicator || !errorMessage || !carsGrid) {
         console.error('[DEBUG] loadCars: Required DOM elements not found');
@@ -279,6 +287,7 @@ async function loadCars(page = 1) {
     
     loadingIndicator.style.display = 'block';
     errorMessage.style.display = 'none';
+    if (searchHint) searchHint.style.display = 'none';
     carsGrid.innerHTML = '';
     
     try {
@@ -328,6 +337,14 @@ async function loadCars(page = 1) {
             total_pages: data.total_pages,
             cars_count: data.cars.length
         });
+
+        // Show Google-like correction hint when backend applied typo-tolerant correction
+        if (searchHint && data && data.original_search && data.corrected_search && data.original_search !== data.corrected_search) {
+            searchHint.innerHTML = `Showing results for <strong>${data.corrected_search}</strong> (from "<strong>${data.original_search}</strong>")`;
+            searchHint.style.display = 'block';
+        } else if (searchHint) {
+            searchHint.style.display = 'none';
+        }
         
         if (data.cars.length > 0) {
             console.log('[DEBUG] loadCars: First car:', {

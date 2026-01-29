@@ -58,6 +58,11 @@
                 <h2>Why Choose CarGenie?</h2>
                 <div class="features-grid">
                     <div class="feature-card">
+                        <div class="feature-icon">🔍</div>
+                        <h3>Advanced Search</h3>
+                        <p>Smart typo-tolerant search that finds cars even with misspellings - just like Google!</p>
+                    </div>
+                    <div class="feature-card">
                         <div class="feature-icon">🤖</div>
                         <h3>AI Chatbot Advisor</h3>
                         <p>Get instant answers to your car questions with our intelligent chatbot</p>
@@ -107,7 +112,7 @@
             if (recommendationsSection && container) {
                 console.log('[DEBUG] index.html: Recommendations section found, loading...');
                 if (typeof loadRecommendations === 'function') {
-                    loadRecommendations('recommendationsContainer', 10);
+                    loadRecommendations('recommendationsContainer', 6);
                 } else {
                     console.warn('[DEBUG] index.html: loadRecommendations function not available');
                 }
