@@ -41,3 +41,7 @@ node_modules/
 dist/
 build/
 
+# Vector Database (ChromaDB)
+chroma_db/
+*.bin
+
