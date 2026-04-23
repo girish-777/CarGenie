@@ -5,7 +5,6 @@ An intelligent car marketplace platform that combines traditional e-commerce fea
 ## Key Features
 
 - **AI Chatbot Assistant**: Global chatbot available on all pages for car-related queries
-- **Advanced Search**: Typo-tolerant fuzzy search that finds cars even with misspellings
 - **Personalized Recommendations**: AI-powered car suggestions based on user preferences
 - **Smart Comparisons**: Side-by-side comparison of multiple cars
 - **Review System**: User reviews with AI-generated summaries
