@@ -17,7 +17,7 @@ An intelligent car marketplace platform that combines traditional e-commerce fea
 
 - **Frontend**: HTML, CSS, JavaScript (Vanilla)
 - **Backend**: FastAPI (Python)
-- **Database**: SQLite (dev) / PostgreSQL (production)
+- **Database**: SQLite (dev) 
 - **Vector DB**: ChromaDB for similarity search
 - **AI Services**: OpenAI API (GPT-3.5-turbo, embeddings)
 
